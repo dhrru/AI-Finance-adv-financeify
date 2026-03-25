@@ -1,0 +1,15 @@
+# Secret Keys
+.env
+
+# Python Virtual Environment
+venv/
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Local Data (Optional, if you want teammates to use their own)
+transactions.csv
+faiss_index/
