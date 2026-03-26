@@ -49,26 +49,21 @@
 #     return result["messages"][-1].content
 
 
+
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from tools import get_transactions, calculate_savings_projection, get_budget_status
 
+# --- DAY 5 IMPORTS ---
+from langgraph.checkpoint.memory import MemorySaver 
+
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 
-# --- DAY 4 REASONING ENGINE ---
-# Use the exact string found from your find_models.py script
-# Usually 'models/gemini-1.5-flash' is the most stable
-# llm = ChatGoogleGenerativeAI(
-#     model="models/gemini-1.5-flash", 
-#     api_key=api_key,
-#     temperature=0
-# )
-
 llm = ChatGoogleGenerativeAI(
-    model="gemini-flash-latest", # USE THE EXACT NAME FROM THE LIST
+    model="gemini-flash-latest", 
     api_key=api_key,
     temperature=0
 )
@@ -82,24 +77,37 @@ Follow the 'Financial Chain-of-Thought':
 
 tools = [get_transactions, calculate_savings_projection, get_budget_status]
 
-# Note: We use 'prompt=' here for your version of LangGraph
-agent = create_react_agent(llm, tools, prompt=SYSTEM_PROMPT)
-def final_ask(query):
+# --- DAY 5 MEMORY INITIALIZATION ---
+# This object acts as the "Storage" for the AI's memory
+memory = MemorySaver()
+
+# Added 'checkpointer=memory' to your existing agent setup
+agent = create_react_agent(
+    llm, 
+    tools, 
+    prompt=SYSTEM_PROMPT, 
+    checkpointer=memory
+)
+
+# Added 'thread_id' to the function so it can track different chats
+def final_ask(query, thread_id="user_default"):
+    # Config tells the memory which "conversation" to load
+    config = {"configurable": {"thread_id": thread_id}}
     inputs = {"messages": [("user", query)]}
+    
     try:
-        result = agent.invoke(inputs)
-        # Get the last message from the AI
+        # We pass the 'config' here so the agent can look at past messages
+        result = agent.invoke(inputs, config=config)
+        
         last_message = result["messages"][-1]
         content = last_message.content
         
-        # --- NEW CLEANING LOGIC ---
-        # If the AI sends a list (which is why you see brackets), find the text part
+        # --- YOUR ORIGINAL CLEANING LOGIC (NOT TOUCHED) ---
         if isinstance(content, list):
             for item in content:
                 if isinstance(item, dict) and item.get('type') == 'text':
                     return item.get('text')
         
-        # If it's already a string, just return it
         return content 
         
     except Exception as e:

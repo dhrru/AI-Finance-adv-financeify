@@ -1,0 +1,18 @@
+/* style.css - Test Version */
+.stApp {
+    background-color: #0b0e14 !important; /* Deep Midnight */
+}
+
+/* This will put a bright green border around your metrics */
+[data-testid="stMetric"] {
+    background: rgba(0, 255, 208, 0.1) !important;
+    border: 2px solid #00ffd0 !important;
+    border-radius: 20px !important;
+    padding: 20px !important;
+}
+
+/* This makes the numbers GLOW */
+[data-testid="stMetricValue"] {
+    color: #00ffd0 !important;
+    text-shadow: 0 0 10px #00ffd0;
+}

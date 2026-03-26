@@ -1,7 +1,51 @@
+# --- TOP OF app.py ---
+import streamlit as st
+import plotly.express as px
+import pandas as pd
+from agent_logic import final_ask
+
+st.set_page_config(page_title="Financeify", layout="wide")
+
+# Your CSS Style Block from before goes here
+st.markdown("<style>...</style>", unsafe_allow_html=True)
+
+# --- MIDDLE OF app.py (Dashboard Layout) ---
+st.title("💰 Financeify")
+
+# Create two columns: Left for Metrics, Right for the Chart
+col_left, col_right = st.columns([1, 2])
+
+with col_left:
+    st.metric("Total Expenses", "$4,419.50", "-12%")
+    st.metric("Savings Goal", "35%", "+5%")
+
+with col_right:
+    # Use a dummy dataframe for the chart
+    df = pd.read_csv("transactions.csv")
+    fig = px.pie(df, values='Amount', names='Category', hole=0.4)
+    # st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
+
+# # --- BOTTOM OF app.py ---
+# # Your existing chat logic stays here
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+
+
+# Put this right after your imports in app.py
+def local_css(file_name):
+    try:
+        with open(file_name) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+            print(f"✅ Successfully loaded {file_name}") # Check your terminal for this!
+    except FileNotFoundError:
+        st.error(f"❌ Could not find {file_name}. Make sure it's in the same folder as app.py")
+
+# Call the function
+local_css("style.css")
 
 # Try to import the logic safely
 try:
@@ -56,6 +100,15 @@ with tab1:
             st.error("CSV must have 'Description' and 'Amount' columns.")
     else:
         st.info("Please upload a CSV file in the sidebar to see the graphs and categorization.")
+
+
+# In app.py
+@st.cache_resource
+def get_agent_response(user_query):
+    # This keeps the logic fast
+    return final_ask(user_query)
+
+import streamlit as st
 
 # --- TAB 2: AI CHATBOT (DAY 3) ---
 with tab2:
