@@ -37,3 +37,24 @@ def calculate_savings_projection(monthly_savings: float, years: int, interest_ra
 def get_budget_status():
     """Checks total spending against typical 50/30/20 benchmarks."""
     return "Feature under maintenance: Please check back after data sync."
+
+
+
+
+
+import yfinance as yf
+from langchain.tools import tool
+
+@tool
+def get_live_market_price(ticker: str):
+    """
+    Fetch the real-time price of commodities or stocks.
+    Use 'XAG=F' for Silver, 'GC=F' for Gold, or 'BTC-USD' for Bitcoin.
+    """
+    try:
+        data = yf.Ticker(ticker)
+        # Get the latest closing price
+        price = data.history(period="1d")['Close'].iloc[-1]
+        return f"The current market price for {ticker} is approximately {price:.2f} USD."
+    except Exception as e:
+        return f"Error fetching price: {str(e)}"
