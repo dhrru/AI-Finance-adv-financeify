@@ -1,16 +1,32 @@
-# Secret Keys
+# --- Secret Keys & Environment ---
 .env
+.flaskenv
 
-# Python Virtual Environment
+# --- Python Virtual Environments ---
 venv/
 venv311/
 .venv/
 env/
+ENV/
 
-# Python Cache
+# --- Python Cache & Compiled Files ---
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.pytest_cache/
 
-# Local Data (Optional, if you want teammates to use their own)
+# --- Database (CRITICAL: Do not push personal data) ---
+*.db
+*.sqlite3
+*.sqlite
+
+# --- Project Specific Data ---
 transactions.csv
 faiss_index/
+*.pdf
+
+# --- Streamlit & System Files ---
+.streamlit/config.toml
+.DS_Store
+Thumbs.db
